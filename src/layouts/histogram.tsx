@@ -27,6 +27,7 @@ interface histogramState{
 }
 interface histogramProps{
     sortingAlgo:string;
+    setInProgress:(bool:boolean)=>void
 }
 export class Histogram extends React.PureComponent<histogramProps,histogramState>{
 
@@ -73,6 +74,7 @@ export class Histogram extends React.PureComponent<histogramProps,histogramState
             return;
         }
         else{
+            this.props.setInProgress(true);
             this.updateSorting(true);
         }
         let animations:Animation[]=[];
@@ -121,6 +123,7 @@ export class Histogram extends React.PureComponent<histogramProps,histogramState
             }
             if(i===animations.length-1){
                 this.setActiveIndices(-1,-1);
+                this.props.setInProgress(false);
                 this.updateSorting(false);
             }
         })
@@ -156,6 +159,7 @@ export class Histogram extends React.PureComponent<histogramProps,histogramState
             }
             if(i===animations.length-1){
                 this.setActiveIndices(-1,-1);
+                this.props.setInProgress(false);
                 this.updateSorting(false);
             }
         })

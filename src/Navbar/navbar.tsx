@@ -4,6 +4,7 @@ import {Menu} from 'antd'
 interface NavbarProps{
     selectedKey:string;
     setSelectedKey:(key:string) => void;
+    isSorting:boolean;
 }
 export class Navbar extends React.PureComponent<NavbarProps,any>{
 
@@ -11,23 +12,23 @@ export class Navbar extends React.PureComponent<NavbarProps,any>{
         console.log(this.props)
         return (
             <Menu
-                selectedKeys={[this.props.selectedKey]}	
                 mode="horizontal"
+                selectedKeys={[this.props.selectedKey]}	
                 onClick={(e)=>{this.props.setSelectedKey(e.key.toString())}}
             >    
-            <Menu.Item key="insertion">
+            <Menu.Item key="insertion" disabled={this.props.isSorting}>
                 Insertion Sort
             </Menu.Item>
-            <Menu.Item key="bubble">
+            <Menu.Item key="bubble" disabled={this.props.isSorting}>
                 Bubble Sort
             </Menu.Item>
-            <Menu.Item key="quick">
+            <Menu.Item key="quick" disabled={this.props.isSorting}>
                 Quick Sort
             </Menu.Item>
-            <Menu.Item key="merge">
+            <Menu.Item key="merge" disabled={this.props.isSorting}>
                 Merge Sort
             </Menu.Item>
-            <Menu.Item key="selection">
+            <Menu.Item key="selection" disabled={this.props.isSorting}>
                 Selection Sort
             </Menu.Item>
             </Menu>
