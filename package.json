@@ -24,6 +24,7 @@
     "typescript": "~3.7.2"
   },
   "scripts": {
+    "serve": "react-scripts start",
     "start": "node server/server.js",
     "build": "react-scripts build",
     "test": "react-scripts test",
