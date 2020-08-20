@@ -35,6 +35,7 @@ interface histogramProps{
 }
 export class Histogram extends React.PureComponent<histogramProps,histogramState>{
 
+    private timeOut:any=null;
     private readonly initialState:histogramState={
         numbers:[],
         index1: -2,
@@ -62,6 +63,9 @@ export class Histogram extends React.PureComponent<histogramProps,histogramState
             )
         }
     }
+    componentWillUnmount(){
+        clearTimeout(this.timeOut);
+    }
     updateNumbersArrayUponGeneration(){
         const innerWidth=window.innerWidth;
         const avg=Math.floor(innerWidth/20);
@@ -71,6 +75,7 @@ export class Histogram extends React.PureComponent<histogramProps,histogramState
         )
     }
     updateNumbersArrayFromWrapper(arr:number[]){
+        clearTimeout(this.timeOut);
         this.setState(
             {...this.initialState,...{numbers:arr}}
         )
@@ -143,9 +148,9 @@ export class Histogram extends React.PureComponent<histogramProps,histogramState
             function run(){
                 callback(i);
                 i++;
-                const t2=setTimeout(run,ref.state?.speed);
+                ref.timeOut=setTimeout(run,ref.state?.speed);
                 if(i>count){
-                    clearTimeout(t2);
+                    clearTimeout(ref.timeOut);
                 }
             },
             delay
@@ -251,7 +256,7 @@ export class Histogram extends React.PureComponent<histogramProps,histogramState
                                 </Select>
                             </div>
                 }
-                <div className="histogram">
+                <div className={`histogram ${this.props?.sortingAlgo==='compare'?'compare':''}`}>
                     {this.state?.numbers.map((value,index)=>{
                         return (
                             <Bar 
