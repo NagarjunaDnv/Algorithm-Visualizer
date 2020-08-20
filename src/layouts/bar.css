@@ -1,0 +1,30 @@
+.bar-cont{
+   position: relative;
+}
+.bar-cont div:nth-child(2){
+    width: 100%;
+    text-align: center;
+    font-family: sans-serif;
+    margin-top: 10px;
+}
+.bar{
+    width: 25px;
+    /* background-color:#eeeeee; */
+    background-color: hsla(0,0%,100%,.65);
+    transition: all 0.1s;
+}
+.active{
+    background-color: #ff5722;
+}
+.min{
+    background-color: rgb(78, 158, 204);
+}
+.border{
+    background-color: rgb(221, 241, 105);
+}
+.override{
+    background-color: blueviolet;
+}
+.sorted{
+    background-color: rgb(35, 192, 100);
+}

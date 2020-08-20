@@ -1,0 +1,8 @@
+.histogram{
+    display: flex;
+    width: 100%;
+    justify-content: space-evenly;
+    align-items: flex-end;
+    margin-bottom: 25px;
+    margin-top: 40px;
+}
