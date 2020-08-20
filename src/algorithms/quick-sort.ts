@@ -72,7 +72,6 @@ export function quickSort(arr:number[]):Animation[]{
             override:false,
             inPositionQuickSort:new Set(inPositionIndices)
         })
-        console.log(animations);
         return border; 
     }
 

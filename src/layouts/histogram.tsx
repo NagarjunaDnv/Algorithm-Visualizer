@@ -8,6 +8,7 @@ import { bubbleSort } from '../algorithms/bubble-sort';
 import { selectionSort } from '../algorithms/selection-sort';
 import { mergeSort } from '../algorithms/merge-sort';
 import { quickSort } from '../algorithms/quick-sort';
+import { generateRandomArray } from '../shared/shared';
 
 const { Option }=Select;
 
@@ -27,12 +28,15 @@ interface histogramState{
 }
 interface histogramProps{
     sortingAlgo:string;
-    setInProgress:(bool:boolean)=>void
+    setInProgress:(bool:boolean)=>void;
+    isCompare:boolean;
+    speed?:number;
+    generatedArray:number[]
 }
 export class Histogram extends React.PureComponent<histogramProps,histogramState>{
 
     private readonly initialState:histogramState={
-        numbers: [],
+        numbers:[],
         index1: -2,
         index2: -2,
         minValueIndex: -1,
@@ -43,30 +47,32 @@ export class Histogram extends React.PureComponent<histogramProps,histogramState
         inPositionIndicesQuickSort:new Set<number>(),
         sorting: false,
         size:(Math.floor(window.innerWidth/20)-Math.floor(Math.floor(window.innerWidth/20)*0.4)),
-        speed:250
+        speed:this.props?.speed ? this.props?.speed : 50
     }
     componentDidMount() {
-        this.setState(
-            {...this.initialState,...{numbers: this.generateRandomArray(this.initialState.size),sorting:false}}
-        )
-    }
-
-    generateRandomArray(size:number):number[]{
-        if(size<1){
-            return [];
+        console.log('triggred')
+        if(this.props.generatedArray && this.props.generatedArray.length!==0){
+            this.setState(
+                {...this.initialState,...{numbers: this.props.generatedArray }}
+            )
         }
-        let randomArr=new Array(size);
-        for(let i=0;i<size;i++){
-            randomArr[i]=Math.floor(Math.random()*100);
+        else{
+            this.setState(
+                {...this.initialState,...{numbers: generateRandomArray(this.initialState.size)}}
+            )
         }
-        return randomArr;
     }
     updateNumbersArrayUponGeneration(){
         const innerWidth=window.innerWidth;
         const avg=Math.floor(innerWidth/20);
         const size= avg-Math.floor(avg*0.4);
         this.setState(
-            {...this.initialState,...{numbers: this.generateRandomArray(size),size:size}}
+            {...this.initialState,...{numbers: generateRandomArray(size),size:size}}
+        )
+    }
+    updateNumbersArrayFromWrapper(arr:number[]){
+        this.setState(
+            {...this.initialState,...{numbers:arr}}
         )
     }
     sort(){
@@ -234,12 +240,17 @@ export class Histogram extends React.PureComponent<histogramProps,histogramState
     render(){
         return (
             <div style={{width:"100%",textAlign:"center"}}>
-                Speed: &nbsp;
-                <Select value={this.state?.speed} style={{width:100}} onChange={(speed)=>this.setSpeed(speed)}>
-                    <Option value={450}>Low</Option>
-                    <Option value={250}>Medium</Option>
-                    <Option value={50}>High</Option>
-                </Select>
+                {
+                    this.props.isCompare ? null :
+                            <div>
+                                <span>Speed: &nbsp;</span>
+                                <Select value={this.state?.speed} style={{width:100}} onChange={(speed)=>this.setSpeed(speed)}>
+                                    <Option value={450}>Low</Option>
+                                    <Option value={250}>Medium</Option>
+                                    <Option value={50}>High</Option>
+                                </Select>
+                            </div>
+                }
                 <div className="histogram">
                     {this.state?.numbers.map((value,index)=>{
                         return (
@@ -259,8 +270,15 @@ export class Histogram extends React.PureComponent<histogramProps,histogramState
                         )
                     })}
                 </div>
-                <Button onClick={()=>this.sort()} disabled={this.state?.sorting || this.state?.index1===-1}>{this.state?.sorting ? 'Sorting...' : 'Sort'}</Button>
-                <Button onClick={()=>this.updateNumbersArrayUponGeneration()} disabled={this.state?.sorting}>Generate new array</Button>
+                {
+                    this.props.isCompare ? null : 
+                    <Button onClick={()=>this.sort()} disabled={this.state?.sorting || this.state?.index1===-1}>{this.state?.sorting ? 'Sorting...' : 'Sort'}</Button>
+                }
+                {
+                    this.props.isCompare ? null : 
+                        <Button onClick={()=>this.updateNumbersArrayUponGeneration()} disabled={this.state?.sorting}>Generate new array
+                        </Button>
+                }
             </div>
         );
     }

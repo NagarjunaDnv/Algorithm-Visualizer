@@ -9,7 +9,6 @@ interface NavbarProps{
 export class Navbar extends React.PureComponent<NavbarProps,any>{
 
     render(){
-        console.log(this.props)
         return (
             <Menu
                 mode="horizontal"
@@ -30,6 +29,9 @@ export class Navbar extends React.PureComponent<NavbarProps,any>{
             </Menu.Item>
             <Menu.Item key="selection" disabled={this.props.isSorting}>
                 Selection Sort
+            </Menu.Item>
+            <Menu.Item key="compare" disabled={this.props.isSorting}>
+                Compare
             </Menu.Item>
             </Menu>
         );
