@@ -28,6 +28,8 @@ interface histogramState{
     size:number;
     speed:number;
     inputSize:string;
+    executionTime:number;
+    animationTime: number;
 }
 interface histogramProps{
     sortingAlgo:string;
@@ -53,10 +55,11 @@ export class Histogram extends React.PureComponent<histogramProps,histogramState
         sorting: false,
         size: optimalMaxSize,
         inputSize: String(optimalMaxSize),
-        speed:this.props?.speed ? this.props?.speed : highSpeed
+        speed:this.props?.speed ? this.props?.speed : highSpeed,
+        executionTime:-1,
+        animationTime: -1
     }
     componentDidMount() {
-        console.log('triggred')
         if(this.props.generatedArray && this.props.generatedArray.length!==0){
             this.setState(
                 {...this.initialState,...{numbers: this.props.generatedArray,numbersCopy:this.props.generatedArray}}
@@ -111,7 +114,7 @@ export class Histogram extends React.PureComponent<histogramProps,histogramState
             animations= selectionSort(this.state.numbers.slice());
         }
         else if(sortingAlgo==='merge'){
-            return this.handleMergeSortAnimation();
+            animations= mergeSort(this.state.numbers.slice());
         }
         else if(sortingAlgo==='quick'){
             animations= quickSort(this.state.numbers.slice());
@@ -127,7 +130,9 @@ export class Histogram extends React.PureComponent<histogramProps,histogramState
             const isInPositionSelection= animations[i]['isInPositionSelection'];
             const borderIndex= animations[i]['borderIndexQuickSort'];
             const inPositionIndicesQuickSort= animations[i]['inPositionQuickSort'];
-            this.setActiveIndices(index1,index2);
+            if(sortingAlgo!=='merge'){
+                this.setActiveIndices(index1,index2);
+            }
             if(minValueIndex!==undefined){
                 this.updateMinValueIndex(minValueIndex);
             }
@@ -145,6 +150,16 @@ export class Histogram extends React.PureComponent<histogramProps,histogramState
             }
             if(inPositionIndicesQuickSort!==undefined){
                 this.updateInPositionIndicesQuickSort(inPositionIndicesQuickSort);
+            }
+            if(sortingAlgo==='merge'){
+                if(animations[i].override){
+                    this.setActiveIndices(-2,-2);
+                    this.updateNumbersArratWithaValue(animations[i]['indicesMergeSort']);
+                }
+                else{
+                    this.updateOverridedIndex(-1);
+                    this.setActiveIndices(animations[i]['indices'][0],animations[i]['indices'][1]);
+                }
             }
             if(i===animations.length-1){
                 this.setActiveIndices(-1,-1);
@@ -170,27 +185,7 @@ export class Histogram extends React.PureComponent<histogramProps,histogramState
             delay
         )
     }
-
-    handleMergeSortAnimation(){
-        let animations:Animation[]= mergeSort(this.state.numbers.slice());
-        const animate=((i:number)=>{
-            if(animations[i].override){
-                this.setActiveIndices(-2,-2);
-                this.updateNumbersArratWithaValue(animations[i]['indicesMergeSort']);
-            }
-            else{
-                this.updateOverridedIndex(-1);
-                this.setActiveIndices(animations[i]['indices'][0],animations[i]['indices'][1]);
-            }
-            if(i===animations.length-1){
-                this.setActiveIndices(-1,-1);
-                this.props.setInProgress(false);
-                this.updateSorting(false);
-            }
-        })
-        this.setInterval(animate,this.state?.speed,animations.length-1);
-    }
-
+    
     updateNumbersArratWithaValue(iv:number[] | undefined){
         if(!iv){
             return false;

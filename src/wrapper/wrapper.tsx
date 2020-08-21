@@ -218,7 +218,7 @@ export class Wrapper extends React.PureComponent<any,WrapperState>{
                             {
                                 this.state?.algosInComparision.map((value,index)=>{
                                     return(
-                                        <div className="histo-wrapper">
+                                        <div className="histo-wrapper" key={index}>
                                             <div className="sorting-cont" key={index}>
                                                 <Histogram sortingAlgo={value} setInProgress={(bool:boolean)=>this.setInProgress(bool)} isCompare={true} ref={this.histogramElements[index]} generatedArray={this.state?.randomArray} speed={this.state?.speed}></Histogram>
                                             </div>
