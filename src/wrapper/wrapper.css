@@ -17,8 +17,13 @@
     margin-bottom: 5px;
     color: #e4e6eb;
 }
+.histo-wrapper{
+    position: relative;
+}
 .sub-title{
     font-size: 20px;
-    margin-bottom: 0;
+    margin-bottom:0px;
     margin-top: 0;
+    position: absolute;
+    bottom: -12px;
 }

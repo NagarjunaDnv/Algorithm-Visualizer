@@ -14,6 +14,7 @@ const { Option }=Select;
 
 interface histogramState{
     numbers:number[];
+    numbersCopy:number[];
     index1:number;
     index2:number;
     minValueIndex:number;
@@ -38,6 +39,7 @@ export class Histogram extends React.PureComponent<histogramProps,histogramState
     private timeOut:any=null;
     private readonly initialState:histogramState={
         numbers:[],
+        numbersCopy:[],
         index1: -2,
         index2: -2,
         minValueIndex: -1,
@@ -54,12 +56,13 @@ export class Histogram extends React.PureComponent<histogramProps,histogramState
         console.log('triggred')
         if(this.props.generatedArray && this.props.generatedArray.length!==0){
             this.setState(
-                {...this.initialState,...{numbers: this.props.generatedArray }}
+                {...this.initialState,...{numbers: this.props.generatedArray,numbersCopy:this.props.generatedArray}}
             )
         }
         else{
+            const randomArray= generateRandomArray(this.initialState.size);
             this.setState(
-                {...this.initialState,...{numbers: generateRandomArray(this.initialState.size)}}
+                {...this.initialState,...{numbers: randomArray, numbersCopy:randomArray}}
             )
         }
     }
@@ -70,14 +73,15 @@ export class Histogram extends React.PureComponent<histogramProps,histogramState
         const innerWidth=window.innerWidth;
         const avg=Math.floor(innerWidth/20);
         const size= avg-Math.floor(avg*0.4);
+        const randomArray= generateRandomArray(size)
         this.setState(
-            {...this.initialState,...{numbers: generateRandomArray(size),size:size}}
+            {...this.initialState,...{numbers: randomArray ,numbersCopy:randomArray, size:size}}
         )
     }
     updateNumbersArrayFromWrapper(arr:number[]){
         clearTimeout(this.timeOut);
         this.setState(
-            {...this.initialState,...{numbers:arr}}
+            {...this.initialState,...{numbers:arr,numbersCopy:arr}}
         )
     }
     sort(){
@@ -223,7 +227,20 @@ export class Histogram extends React.PureComponent<histogramProps,histogramState
             ...this.state,...{numbers:newNumbers}
         })
     }
-
+    resetArray(){
+        clearTimeout(this.timeOut);
+        this.setState(
+            {
+                ...this.initialState,
+                ...{
+                    numbers:this.state?.numbersCopy.slice(),
+                    numbersCopy:this.state?.numbersCopy.slice(),
+                    sorting:false 
+                }
+            }
+        )
+        this.props.setInProgress(false);
+    }
     setActiveIndices(index1:number,index2:number){
         this.setState(
             {
@@ -280,8 +297,12 @@ export class Histogram extends React.PureComponent<histogramProps,histogramState
                     <Button onClick={()=>this.sort()} disabled={this.state?.sorting || this.state?.index1===-1}>{this.state?.sorting ? 'Sorting...' : 'Sort'}</Button>
                 }
                 {
+                    this.props.isCompare ? null :
+                    <Button onClick={()=>this.resetArray()}> Reset</Button>
+                }
+                {
                     this.props.isCompare ? null : 
-                        <Button onClick={()=>this.updateNumbersArrayUponGeneration()} disabled={this.state?.sorting}>Generate new array
+                        <Button onClick={()=>this.updateNumbersArrayUponGeneration()} disabled={this.state?.sorting}>Generate new
                         </Button>
                 }
             </div>

@@ -35,6 +35,19 @@ export class Wrapper extends React.PureComponent<any,WrapperState>{
             selectedKey: key
         })
     }
+    reset(){
+        this.count=0;
+        this.setState({
+            isInprogress: false,
+            comDone: false,
+        })
+        this.histogramElements.forEach((elem)=>{
+            setTimeout(()=>{
+                elem.current.updateNumbersArrayFromWrapper(this.state?.randomArray);
+            },10)
+        })
+    }
+
     setInProgress(bool:boolean){
         if(bool===true){
             this.setState({
@@ -63,7 +76,7 @@ export class Wrapper extends React.PureComponent<any,WrapperState>{
         if(!text){
             return '';
         }
-        else if(text!='compare'){
+        else if(text!=='compare'){
             return (text.charAt(0).toUpperCase()+text.substr(1,text.length)+' Sort');
         }
         else{
@@ -142,7 +155,8 @@ export class Wrapper extends React.PureComponent<any,WrapperState>{
                     (
                         <div style={{display:"flex"}}>
                             <Button onClick={()=>this.sort()} disabled={this.state?.isInprogress || this.state?.comDone }>{this.state?.isInprogress ? 'Comparing...' : 'Sort'}</Button>
-                            <Button onClick={()=>this.updateRandomArray()} disabled={this.state?.isInprogress}>Generate new array</Button>
+                            <Button onClick={()=>this.updateRandomArray()} disabled={this.state?.isInprogress}>Generate new</Button>
+                            <Button onClick={()=>this.reset()}>Reset</Button>
                             {this.selectLayout()}
                         </div>
                     ) : null
@@ -154,18 +168,18 @@ export class Wrapper extends React.PureComponent<any,WrapperState>{
                     </div> : null
                 }
                 {
-                    (this.state?.selectedKey==='compare' && this.state?.randomArray.length!=0)?
+                    (this.state?.selectedKey==='compare' && this.state?.randomArray.length!==0)?
                     (
                         this.state?.algosInComparision.map((value,index)=>{
                             return(
-                                <React.Fragment>
-                                    <div className="sub-title">
-                                        {this.getTitle(value)}
-                                    </div>
+                                <div className="histo-wrapper">
                                     <div className="sorting-cont" key={index}>
                                         <Histogram sortingAlgo={value} setInProgress={(bool:boolean)=>this.setInProgress(bool)} isCompare={true} ref={this.histogramElements[index]} generatedArray={this.state?.randomArray}></Histogram>
                                     </div>
-                                </React.Fragment>
+                                    <div className="sub-title">
+                                        {this.getTitle(value)}
+                                    </div>
+                                </div>
                             )
                         })
                     ) :null
