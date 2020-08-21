@@ -9,6 +9,7 @@ import { selectionSort } from '../algorithms/selection-sort';
 import { mergeSort } from '../algorithms/merge-sort';
 import { quickSort } from '../algorithms/quick-sort';
 import { generateRandomArray } from '../shared/shared';
+import { heapSort } from '../algorithms/heap-sort';
 
 const { Option }=Select;
 
@@ -50,7 +51,7 @@ export class Histogram extends React.PureComponent<histogramProps,histogramState
         inPositionIndicesQuickSort:new Set<number>(),
         sorting: false,
         size:(Math.floor(window.innerWidth/20)-Math.floor(Math.floor(window.innerWidth/20)*0.4)),
-        speed:this.props?.speed ? this.props?.speed : 50
+        speed:this.props?.speed ? this.props?.speed : 200
     }
     componentDidMount() {
         console.log('triggred')
@@ -106,8 +107,11 @@ export class Histogram extends React.PureComponent<histogramProps,histogramState
         else if(sortingAlgo==='merge'){
             return this.handleMergeSortAnimation();
         }
-        else{
+        else if(sortingAlgo==='quick'){
             animations= quickSort(this.state.numbers.slice());
+        }
+        else{
+            animations=heapSort(this.state.numbers.slice());
         }
         const animate=((i:number)=>{
             const index1= animations[i]['indices'][0];
@@ -267,9 +271,9 @@ export class Histogram extends React.PureComponent<histogramProps,histogramState
                             <div>
                                 <span>Speed: &nbsp;</span>
                                 <Select value={this.state?.speed} style={{width:100}} onChange={(speed)=>this.setSpeed(speed)}>
-                                    <Option value={450}>Low</Option>
-                                    <Option value={250}>Medium</Option>
-                                    <Option value={50}>High</Option>
+                                    <Option value={500}>Low</Option>
+                                    <Option value={200}>Medium</Option>
+                                    <Option value={25}>High</Option>
                                 </Select>
                             </div>
                 }

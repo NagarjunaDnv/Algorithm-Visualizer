@@ -8,5 +8,5 @@ export interface Animation{
     isInPositionSelection?:number;
     indicesMergeSort?:number[];
     borderIndexQuickSort?:number;
-    inPositionQuickSort?:Set<number>
+    inPositionQuickSort?:Set<number>;
 }

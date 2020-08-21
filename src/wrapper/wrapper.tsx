@@ -3,7 +3,7 @@ import { Navbar } from '../Navbar/navbar';
 import { Histogram } from '../layouts/histogram';
 import './wrapper.css';
 import { Button, Select } from 'antd';
-import { generateRandomArray } from '../shared/shared';
+import { generateRandomArray, algos, getTitle } from '../shared/shared';
 
 const {Option}=Select;
 
@@ -12,14 +12,14 @@ interface WrapperState{
     isInprogress:boolean;
     randomArray:number[];
     comDone:boolean;
-    algosInComparision:string[]
+    algosInComparision:string[];
+    speed:number;
 }
 
 export class Wrapper extends React.PureComponent<any,WrapperState>{
 
     private histogramElements:any[]= new Array(2).fill(0).map(()=>React.createRef());
     private readonly initialSize=(Math.floor(window.innerWidth/20)-Math.floor(Math.floor(window.innerWidth/20)*0.4));
-    private readonly algos=['bubble','insertion','quick','merge','selection'];
     private count:number=0;
 
     componentDidMount(){
@@ -27,7 +27,8 @@ export class Wrapper extends React.PureComponent<any,WrapperState>{
             selectedKey:'insertion',
             randomArray: generateRandomArray(this.initialSize),
             algosInComparision: ['merge','quick'],
-            comDone: false
+            comDone: false,
+            speed: 25
         })
     }
     setSelectedKey(key:string){
@@ -72,17 +73,6 @@ export class Wrapper extends React.PureComponent<any,WrapperState>{
         }
 
     }
-    getTitle(text:string){
-        if(!text){
-            return '';
-        }
-        else if(text!=='compare'){
-            return (text.charAt(0).toUpperCase()+text.substr(1,text.length)+' Sort');
-        }
-        else{
-            return (text.charAt(0).toUpperCase()+text.substr(1,text.length));
-        }
-    }
     sort(){
         this.count=0;
         this.histogramElements.forEach((elem)=>{
@@ -109,7 +99,19 @@ export class Wrapper extends React.PureComponent<any,WrapperState>{
         this.histogramElements= new Array(algosInComparision.length).fill(0).map(()=> React.createRef());
         this.setState({...this.state,...{algosInComparision}});
     }
-
+    setSpeed(speed:number){
+        if(this.state?.speed===speed){
+            return;
+        }
+        this.setState({
+            speed:speed
+        })
+        this.histogramElements.forEach((elem)=>{
+            setTimeout(()=>{
+                elem.current.setSpeed(speed);
+            },10)
+        })
+    }
     selectLayout(){
         return (
             <Select
@@ -121,10 +123,10 @@ export class Wrapper extends React.PureComponent<any,WrapperState>{
                 onChange={(algosInComparision)=>this.handleOnChange(algosInComparision)}
             >
                 {
-                    this.algos.map((value,index)=>{
+                    algos.map((value,index)=>{
                         return (
                             <Option key={index} value={value}>
-                                {this.getTitle(value)}
+                                {getTitle(value)}
                             </Option>
                         )
                     })
@@ -146,7 +148,7 @@ export class Wrapper extends React.PureComponent<any,WrapperState>{
                     this.state?.selectedKey!=='compare'?
                     (
                         <div className="title">
-                            { this.getTitle(this.state?.selectedKey)}
+                            { getTitle(this.state?.selectedKey)}
                         </div>
                     ):null
                 }
@@ -158,6 +160,16 @@ export class Wrapper extends React.PureComponent<any,WrapperState>{
                             <Button onClick={()=>this.updateRandomArray()} disabled={this.state?.isInprogress}>Generate new</Button>
                             <Button onClick={()=>this.reset()}>Reset</Button>
                             {this.selectLayout()}
+                            <div style={{display:"flex",alignItems:"center"}}>
+                                <div style={{marginLeft:10,marginRight:5}}>
+                                    Speed:
+                                </div>
+                                <Select value={this.state?.speed} style={{width:100}} onChange={(speed)=>this.setSpeed(speed)} disabled={this.state?.isInprogress}>
+                                        <Option value={500}>Low</Option>
+                                        <Option value={200}>Medium</Option>
+                                        <Option value={25}>High</Option>
+                                </Select>
+                            </div>
                         </div>
                     ) : null
                 }
@@ -174,10 +186,10 @@ export class Wrapper extends React.PureComponent<any,WrapperState>{
                             return(
                                 <div className="histo-wrapper">
                                     <div className="sorting-cont" key={index}>
-                                        <Histogram sortingAlgo={value} setInProgress={(bool:boolean)=>this.setInProgress(bool)} isCompare={true} ref={this.histogramElements[index]} generatedArray={this.state?.randomArray}></Histogram>
+                                        <Histogram sortingAlgo={value} setInProgress={(bool:boolean)=>this.setInProgress(bool)} isCompare={true} ref={this.histogramElements[index]} generatedArray={this.state?.randomArray} speed={this.state?.speed}></Histogram>
                                     </div>
                                     <div className="sub-title">
-                                        {this.getTitle(value)}
+                                        {getTitle(value)}
                                     </div>
                                 </div>
                             )
