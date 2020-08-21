@@ -13,6 +13,7 @@ export class Navbar extends React.PureComponent<NavbarProps,any>{
         return (
             <Menu
                 mode="horizontal"
+                style={{marginBottom:10}}
                 selectedKeys={[this.props.selectedKey]}	
                 onClick={(e)=>{this.props.setSelectedKey(e.key.toString())}}
             >    

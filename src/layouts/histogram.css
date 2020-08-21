@@ -1,12 +1,40 @@
 .histogram{
     display: flex;
     width: 100%;
-    justify-content: space-evenly;
+    justify-content: center;
     align-items: flex-end;
     margin-bottom: 25px;
     margin-top: 40px;
 }
+.histogram .bar-c-cont{
+    margin-left: 4px;
+    margin-right: 4px;
+}
+.histogram .bar-c-cont:first-child{
+    margin-left: 8px;
+}
+.histogram .bar-c-cont:last-child{
+    margin-right: 8px;
+}
 .compare{
     margin-bottom: 0px;
     margin-top: 0px;
+}
+.flex{
+    display: flex;
+    width: 100%;
+    justify-content: center;
+}
+.flex .flex-child{
+    display: flex;
+    align-items: center;
+}
+.label{
+    width: 100%;
+}
+.flex .flex-child{
+    margin-right: 15px;
+}
+.flex .flex-child:last-child{
+    margin-right: 0;
 }

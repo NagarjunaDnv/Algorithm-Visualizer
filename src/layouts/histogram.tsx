@@ -2,13 +2,13 @@ import React from 'react';
 import { Bar } from './bar';
 import './histogram.css';
 import { insertionSort } from '../algorithms/insertion-sort';
-import { Button, Select } from 'antd';
+import { Button, Select, Input } from 'antd';
 import { Animation } from '../algorithms/interfaces';
 import { bubbleSort } from '../algorithms/bubble-sort';
 import { selectionSort } from '../algorithms/selection-sort';
 import { mergeSort } from '../algorithms/merge-sort';
 import { quickSort } from '../algorithms/quick-sort';
-import { generateRandomArray, highSpeed, mediumSpeed, lowSpeed } from '../shared/shared';
+import { generateRandomArray, highSpeed, mediumSpeed, lowSpeed, notify, optimalMaxSize, minSize } from '../shared/shared';
 import { heapSort } from '../algorithms/heap-sort';
 
 const { Option }=Select;
@@ -27,13 +27,14 @@ interface histogramState{
     sorting:boolean;
     size:number;
     speed:number;
+    inputSize:string;
 }
 interface histogramProps{
     sortingAlgo:string;
     setInProgress:(bool:boolean)=>void;
     isCompare:boolean;
     speed?:number;
-    generatedArray:number[]
+    generatedArray?:number[]
 }
 export class Histogram extends React.PureComponent<histogramProps,histogramState>{
 
@@ -50,7 +51,8 @@ export class Histogram extends React.PureComponent<histogramProps,histogramState
         borderIndexQuickSort: -1,
         inPositionIndicesQuickSort:new Set<number>(),
         sorting: false,
-        size:(Math.floor(window.innerWidth/20)-Math.floor(Math.floor(window.innerWidth/20)*0.4)),
+        size: optimalMaxSize,
+        inputSize: String(optimalMaxSize),
         speed:this.props?.speed ? this.props?.speed : highSpeed
     }
     componentDidMount() {
@@ -71,12 +73,16 @@ export class Histogram extends React.PureComponent<histogramProps,histogramState
         clearTimeout(this.timeOut);
     }
     updateNumbersArrayUponGeneration(){
-        const innerWidth=window.innerWidth;
-        const avg=Math.floor(innerWidth/20);
-        const size= avg-Math.floor(avg*0.4);
+        
+        const size= parseInt(this.state?.inputSize);
+        if(!size || size<minSize || size>optimalMaxSize){
+            const message=`Array length should be between ${minSize} and ${optimalMaxSize}`;
+            const description=``;
+            return notify(message,'error',description,2);
+        }
         const randomArray= generateRandomArray(size)
         this.setState(
-            {...this.initialState,...{numbers: randomArray ,numbersCopy:randomArray, size:size}}
+            {...this.initialState,...{numbers: randomArray ,numbersCopy:randomArray, size:size, inputSize:String(size)}}
         )
     }
     updateNumbersArrayFromWrapper(arr:number[]){
@@ -239,7 +245,9 @@ export class Histogram extends React.PureComponent<histogramProps,histogramState
                 ...{
                     numbers:this.state?.numbersCopy.slice(),
                     numbersCopy:this.state?.numbersCopy.slice(),
-                    sorting:false 
+                    sorting:false,
+                    size: this.state?.size,
+                    inputSize: String(this.state?.size)
                 }
             }
         )
@@ -263,36 +271,64 @@ export class Histogram extends React.PureComponent<histogramProps,histogramState
         }
         this.setState({speed});
     }
+    setInputSize(inputSize:string){
+        this.setState({inputSize});
+    }
     render(){
         return (
             <div style={{width:"100%",textAlign:"center"}}>
                 {
                     this.props.isCompare ? null :
-                            <div>
-                                <span>Speed: &nbsp;</span>
-                                <Select value={this.state?.speed} style={{width:100}} onChange={(speed)=>this.setSpeed(speed)}>
-                                    <Option value={lowSpeed}>Low</Option>
-                                    <Option value={mediumSpeed}>Medium</Option>
-                                    <Option value={highSpeed}>High</Option>
-                                </Select>
+                            <div className="flex">
+                                <div className="flex-child">
+                                    <div className="label">
+                                        Speed:
+                                    </div>
+                                    <Select value={this.state?.speed} style={{width:100}} onChange={(speed)=>this.setSpeed(speed)}>
+                                        <Option value={lowSpeed}>Low</Option>
+                                        <Option value={mediumSpeed}>Medium</Option>
+                                        <Option value={highSpeed}>High</Option>
+                                    </Select>
+                                </div>
+                                <div className="flex-child">
+                                    <div className="label">
+                                        Array Length:
+                                    </div>
+                                    <Input
+                                        value={this.state?.inputSize}
+                                        onChange={(e)=>this.setInputSize(e.target.value)}
+                                        style={{width:75}}
+                                        disabled={this.state?.sorting}
+                                    >
+                                    </Input>
+                                </div>
+                                <div>
+                                {
+                                    this.props.isCompare ? null : 
+                                        <Button onClick={()=>this.updateNumbersArrayUponGeneration()} disabled={this.state?.sorting}>Generate new
+                                        </Button>
+                                }
+                                </div>
                             </div>
                 }
                 <div className={`histogram ${this.props?.sortingAlgo==='compare'?'compare':''}`}>
                     {this.state?.numbers.map((value,index)=>{
                         return (
-                            <Bar 
-                                height={value} 
-                                key={index} 
-                                active={ 
-                                    (
-                                        index===this.state?.index1 || index===this.state?.index2 
-                                    ) 
-                                } 
-                                sorted={this.state?.index1===-1 || index>this.state?.isInPositionBubble || index< this.state?.isInPositionSelection || this.state?.inPositionIndicesQuickSort?.has(index)}
-                                isMin={this.state?.minValueIndex===index}
-                                isbeingOverrided={this.state?.overridedIndex===index}
-                                isBorderIndex={this.state?.borderIndexQuickSort===index}
-                            />
+                            <div className="bar-c-cont" key={index}>
+                                <Bar 
+                                    height={value} 
+                                    key={index} 
+                                    active={ 
+                                        (
+                                            index===this.state?.index1 || index===this.state?.index2 
+                                        ) 
+                                    } 
+                                    sorted={this.state?.index1===-1 || index>this.state?.isInPositionBubble || index< this.state?.isInPositionSelection || this.state?.inPositionIndicesQuickSort?.has(index)}
+                                    isMin={this.state?.minValueIndex===index}
+                                    isbeingOverrided={this.state?.overridedIndex===index}
+                                    isBorderIndex={this.state?.borderIndexQuickSort===index}
+                                />
+                            </div>
                         )
                     })}
                 </div>
@@ -303,11 +339,6 @@ export class Histogram extends React.PureComponent<histogramProps,histogramState
                 {
                     this.props.isCompare ? null :
                     <Button onClick={()=>this.resetArray()}> Reset</Button>
-                }
-                {
-                    this.props.isCompare ? null : 
-                        <Button onClick={()=>this.updateNumbersArrayUponGeneration()} disabled={this.state?.sorting}>Generate new
-                        </Button>
                 }
             </div>
         );

@@ -2,8 +2,8 @@ import React from 'react';
 import { Navbar } from '../Navbar/navbar';
 import { Histogram } from '../layouts/histogram';
 import './wrapper.css';
-import { Button, Select } from 'antd';
-import { generateRandomArray, algos, getTitle, highSpeed, mediumSpeed, lowSpeed } from '../shared/shared';
+import { Button, Select, Input } from 'antd';
+import { generateRandomArray, algos, getTitle, highSpeed, mediumSpeed, lowSpeed, optimalMaxSize, notify, minSize } from '../shared/shared';
 
 const {Option}=Select;
 
@@ -14,21 +14,24 @@ interface WrapperState{
     comDone:boolean;
     algosInComparision:string[];
     speed:number;
+    size: number;
+    inputSize: string;
 }
 
 export class Wrapper extends React.PureComponent<any,WrapperState>{
 
     private histogramElements:any[]= new Array(2).fill(0).map(()=>React.createRef());
-    private readonly initialSize=(Math.floor(window.innerWidth/20)-Math.floor(Math.floor(window.innerWidth/20)*0.4));
     private count:number=0;
 
     componentDidMount(){
         this.setState({
             selectedKey:'insertion',
-            randomArray: generateRandomArray(this.initialSize),
+            randomArray: generateRandomArray(optimalMaxSize),
             algosInComparision: ['merge','quick'],
             comDone: false,
-            speed: highSpeed
+            speed: highSpeed,
+            size: optimalMaxSize,
+            inputSize: String(optimalMaxSize)
         })
     }
     setSelectedKey(key:string){
@@ -83,11 +86,19 @@ export class Wrapper extends React.PureComponent<any,WrapperState>{
     }
 
     updateRandomArray(){
-        const randomArr= generateRandomArray(this.initialSize);
+        const size= parseInt(this.state?.inputSize);
+        if(!size || size<minSize || size>optimalMaxSize){
+            const message=`Array length should be between ${minSize} and ${optimalMaxSize}`;
+            const description=``;
+            return notify(message,'error',description,2);
+        }
+        const randomArr= generateRandomArray(size);
         this.count=0;
         this.setState({
             randomArray: randomArr,
             comDone: false,
+            inputSize: String(size),
+            size:size
         })
         this.histogramElements.forEach((elem)=>{
             setTimeout(()=>{
@@ -134,6 +145,25 @@ export class Wrapper extends React.PureComponent<any,WrapperState>{
             </Select>
         )
     }
+    setInputSize(inputSize:string){
+        this.setState({inputSize});
+    }
+    getInputLayout(){
+        return(
+            <div style={{display:"flex",alignItems:"center",marginRight:10}}>
+                <div style={{marginLeft:10,marginRight:5}}>
+                    ArrayLength:
+                </div>
+                <Input
+                    value={this.state?.inputSize}
+                    onChange={(e)=>this.setInputSize(e.target.value)}
+                    style={{width:75}}
+                    disabled={this.state?.isInprogress}
+                >
+                </Input>
+            </div>
+        )
+    }
     render(){
         return (
             <div className="container">
@@ -156,9 +186,8 @@ export class Wrapper extends React.PureComponent<any,WrapperState>{
                     this.state?.selectedKey==='compare'?
                     (
                         <div style={{display:"flex"}}>
-                            <Button onClick={()=>this.sort()} disabled={this.state?.isInprogress || this.state?.comDone }>{this.state?.isInprogress ? 'Comparing...' : 'Sort'}</Button>
-                            <Button onClick={()=>this.updateRandomArray()} disabled={this.state?.isInprogress}>Generate new</Button>
-                            <Button onClick={()=>this.reset()}>Reset</Button>
+                            <Button className="mRight" onClick={()=>this.sort()} disabled={this.state?.isInprogress || this.state?.comDone }>{this.state?.isInprogress ? 'Comparing...' : 'Sort'}</Button>
+                            <Button className="mRight" onClick={()=>this.reset()}>Reset</Button>
                             {this.selectLayout()}
                             <div style={{display:"flex",alignItems:"center"}}>
                                 <div style={{marginLeft:10,marginRight:5}}>
@@ -170,30 +199,36 @@ export class Wrapper extends React.PureComponent<any,WrapperState>{
                                         <Option value={highSpeed}>High</Option>
                                 </Select>
                             </div>
+                            {this.getInputLayout()}
+                            <Button onClick={()=>this.updateRandomArray()} disabled={this.state?.isInprogress}>Generate new</Button>
                         </div>
                     ) : null
                 }
                 {
                     (this.state?.selectedKey!=='compare' && this.state?.randomArray) ? 
                     <div className="sorting-cont">
-                        <Histogram sortingAlgo={this.state?.selectedKey ? this.state?.selectedKey : 'insertion'} setInProgress={(bool:boolean)=>this.setInProgress(bool)} isCompare={false} generatedArray={this.state?.randomArray}></Histogram>
+                        <Histogram sortingAlgo={this.state?.selectedKey ? this.state?.selectedKey : 'insertion'} setInProgress={(bool:boolean)=>this.setInProgress(bool)} isCompare={false}></Histogram>
                     </div> : null
                 }
                 {
                     (this.state?.selectedKey==='compare' && this.state?.randomArray.length!==0)?
                     (
-                        this.state?.algosInComparision.map((value,index)=>{
-                            return(
-                                <div className="histo-wrapper">
-                                    <div className="sorting-cont" key={index}>
-                                        <Histogram sortingAlgo={value} setInProgress={(bool:boolean)=>this.setInProgress(bool)} isCompare={true} ref={this.histogramElements[index]} generatedArray={this.state?.randomArray} speed={this.state?.speed}></Histogram>
-                                    </div>
-                                    <div className="sub-title">
-                                        {getTitle(value)}
-                                    </div>
-                                </div>
-                            )
-                        })
+                        <div className="comparisions-box">
+                            {
+                                this.state?.algosInComparision.map((value,index)=>{
+                                    return(
+                                        <div className="histo-wrapper">
+                                            <div className="sorting-cont" key={index}>
+                                                <Histogram sortingAlgo={value} setInProgress={(bool:boolean)=>this.setInProgress(bool)} isCompare={true} ref={this.histogramElements[index]} generatedArray={this.state?.randomArray} speed={this.state?.speed}></Histogram>
+                                            </div>
+                                            <div className="sub-title">
+                                                {getTitle(value)}
+                                            </div>
+                                        </div>
+                                    )
+                                })
+                            }
+                        </div>
                     ) :null
                 }
             </div>
