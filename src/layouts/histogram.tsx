@@ -33,7 +33,7 @@ interface histogramProps{
     sortingAlgo:string;
     setInProgress:(bool:boolean)=>void;
     isCompare:boolean;
-    speed?:number;
+    speed:number;
     generatedArray?:number[]
 }
 export class Histogram extends React.PureComponent<histogramProps,histogramState>{
@@ -88,7 +88,7 @@ export class Histogram extends React.PureComponent<histogramProps,histogramState
     updateNumbersArrayFromWrapper(arr:number[]){
         clearTimeout(this.timeOut);
         this.setState(
-            {...this.initialState,...{numbers:arr,numbersCopy:arr}}
+            {...this.initialState,...{numbers:arr,numbersCopy:arr,speed:this.props?.speed}}
         )
     }
     sort(){

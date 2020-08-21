@@ -208,7 +208,7 @@ export class Wrapper extends React.PureComponent<any,WrapperState>{
                 {
                     (this.state?.selectedKey!=='compare' && this.state?.randomArray) ? 
                     <div className="sorting-cont">
-                        <Histogram sortingAlgo={this.state?.selectedKey ? this.state?.selectedKey : 'insertion'} setInProgress={(bool:boolean)=>this.setInProgress(bool)} isCompare={false}></Histogram>
+                        <Histogram sortingAlgo={this.state?.selectedKey ? this.state?.selectedKey : 'insertion'} setInProgress={(bool:boolean)=>this.setInProgress(bool)} isCompare={false} speed={highSpeed}></Histogram>
                     </div> : null
                 }
                 {
