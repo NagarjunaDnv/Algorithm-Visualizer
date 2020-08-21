@@ -6,6 +6,11 @@ export function insertionSort(arr:number[]){
     for(let i=1;i<l;i++){
         const value=arr[i];
         for(let j=i-1;j>-1;j--){
+            animations.push({
+                indices:[j,j+1],
+                swap:false,
+                override:false
+            })
             if(arr[j]>value){
                 const temp=arr[j+1];
                 arr[j+1]=arr[j];

@@ -1,4 +1,7 @@
 export const algos=['insertion','bubble','quick','merge','selection','heap'];
+export const highSpeed=25;
+export const mediumSpeed=250;
+export const lowSpeed=600;
 
 export function generateRandomArray(size:number):number[]{
     if(size<1){

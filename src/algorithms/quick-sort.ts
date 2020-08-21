@@ -36,12 +36,6 @@ export function quickSort(arr:number[]):Animation[]{
             override:false
         })
         let border=low;
-        animations.push({
-            indices:[low,border],
-            swap:false,
-            override:false,
-            borderIndexQuickSort:border,
-        })
         for(let i=low;i<high+1;i++){
             animations.push({
                 indices:[i,low],
@@ -80,7 +74,19 @@ export function quickSort(arr:number[]):Animation[]{
         const mid=Math.floor((low+high)/2);
         //Median of low,high,mid;
         let pivot=high;
+        animations.push({
+            indices:[low,mid],
+            swap:true,
+            override:false,
+            inPositionQuickSort:new Set(inPositionIndices)
+        })
         if(arr[low]<arr[mid]){
+            animations.push({
+                indices:[mid,high],
+                swap:true,
+                override:false,
+                inPositionQuickSort:new Set(inPositionIndices)
+            })
             if(arr[mid]<arr[high]){
                 pivot=mid
             }
@@ -88,6 +94,12 @@ export function quickSort(arr:number[]):Animation[]{
         else if(arr[low]<arr[high]){
             pivot=low;
         }
+        animations.push({
+            indices:[low,high],
+            swap:true,
+            override:false,
+            inPositionQuickSort:new Set(inPositionIndices)
+        })
         return pivot;
     }
 }

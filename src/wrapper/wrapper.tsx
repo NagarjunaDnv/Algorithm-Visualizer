@@ -3,7 +3,7 @@ import { Navbar } from '../Navbar/navbar';
 import { Histogram } from '../layouts/histogram';
 import './wrapper.css';
 import { Button, Select } from 'antd';
-import { generateRandomArray, algos, getTitle } from '../shared/shared';
+import { generateRandomArray, algos, getTitle, highSpeed, mediumSpeed, lowSpeed } from '../shared/shared';
 
 const {Option}=Select;
 
@@ -28,7 +28,7 @@ export class Wrapper extends React.PureComponent<any,WrapperState>{
             randomArray: generateRandomArray(this.initialSize),
             algosInComparision: ['merge','quick'],
             comDone: false,
-            speed: 25
+            speed: highSpeed
         })
     }
     setSelectedKey(key:string){
@@ -165,9 +165,9 @@ export class Wrapper extends React.PureComponent<any,WrapperState>{
                                     Speed:
                                 </div>
                                 <Select value={this.state?.speed} style={{width:100}} onChange={(speed)=>this.setSpeed(speed)} disabled={this.state?.isInprogress}>
-                                        <Option value={500}>Low</Option>
-                                        <Option value={200}>Medium</Option>
-                                        <Option value={25}>High</Option>
+                                        <Option value={lowSpeed}>Low</Option>
+                                        <Option value={mediumSpeed}>Medium</Option>
+                                        <Option value={highSpeed}>High</Option>
                                 </Select>
                             </div>
                         </div>

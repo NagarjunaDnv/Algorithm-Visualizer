@@ -8,7 +8,7 @@ import { bubbleSort } from '../algorithms/bubble-sort';
 import { selectionSort } from '../algorithms/selection-sort';
 import { mergeSort } from '../algorithms/merge-sort';
 import { quickSort } from '../algorithms/quick-sort';
-import { generateRandomArray } from '../shared/shared';
+import { generateRandomArray, highSpeed, mediumSpeed, lowSpeed } from '../shared/shared';
 import { heapSort } from '../algorithms/heap-sort';
 
 const { Option }=Select;
@@ -51,7 +51,7 @@ export class Histogram extends React.PureComponent<histogramProps,histogramState
         inPositionIndicesQuickSort:new Set<number>(),
         sorting: false,
         size:(Math.floor(window.innerWidth/20)-Math.floor(Math.floor(window.innerWidth/20)*0.4)),
-        speed:this.props?.speed ? this.props?.speed : 200
+        speed:this.props?.speed ? this.props?.speed : highSpeed
     }
     componentDidMount() {
         console.log('triggred')
@@ -271,9 +271,9 @@ export class Histogram extends React.PureComponent<histogramProps,histogramState
                             <div>
                                 <span>Speed: &nbsp;</span>
                                 <Select value={this.state?.speed} style={{width:100}} onChange={(speed)=>this.setSpeed(speed)}>
-                                    <Option value={500}>Low</Option>
-                                    <Option value={200}>Medium</Option>
-                                    <Option value={25}>High</Option>
+                                    <Option value={lowSpeed}>Low</Option>
+                                    <Option value={mediumSpeed}>Medium</Option>
+                                    <Option value={highSpeed}>High</Option>
                                 </Select>
                             </div>
                 }
