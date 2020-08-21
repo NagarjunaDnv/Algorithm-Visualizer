@@ -44,6 +44,7 @@ export class Wrapper extends React.PureComponent<any,WrapperState>{
         this.setState({
             isInprogress: false,
             comDone: false,
+            inputSize:String(this.state?.size)
         })
         this.histogramElements.forEach((elem)=>{
             setTimeout(()=>{
