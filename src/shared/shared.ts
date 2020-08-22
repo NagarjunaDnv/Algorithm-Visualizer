@@ -2,7 +2,7 @@ import {notification} from 'antd'
 import { ArgsProps } from 'antd/lib/notification';
 
 export const algos=['insertion','bubble','quick','merge','selection','heap'];
-export const highSpeed=25;
+export const highSpeed=20;
 export const mediumSpeed=250;
 export const lowSpeed=600;
 const screenWidth=window.screen.width;

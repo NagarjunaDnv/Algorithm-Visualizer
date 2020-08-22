@@ -3,6 +3,7 @@ import { Bar } from './bar';
 import './histogram.css';
 import { insertionSort } from '../algorithms/insertion-sort';
 import { Button, Select, Input } from 'antd';
+import { PauseCircleFilled,PlayCircleFilled} from '@ant-design/icons'
 import { Animation } from '../algorithms/interfaces';
 import { bubbleSort } from '../algorithms/bubble-sort';
 import { selectionSort } from '../algorithms/selection-sort';
@@ -30,6 +31,7 @@ interface histogramState{
     inputSize:string;
     executionTime:number;
     animationTime: number;
+    paused: boolean;
 }
 interface histogramProps{
     sortingAlgo:string;
@@ -57,7 +59,8 @@ export class Histogram extends React.PureComponent<histogramProps,histogramState
         inputSize: String(optimalMaxSize),
         speed:this.props?.speed ? this.props?.speed : highSpeed,
         executionTime:-1,
-        animationTime: -1
+        animationTime: -1,
+        paused: false
     }
     componentDidMount() {
         if(this.props.generatedArray && this.props.generatedArray.length!==0){
@@ -165,6 +168,7 @@ export class Histogram extends React.PureComponent<histogramProps,histogramState
                 this.setActiveIndices(-1,-1);
                 this.props.setInProgress(false);
                 this.updateSorting(false);
+                this.handlePausePlay();
             }
         })
         this.setInterval(animate,this.state?.speed,animations.length-1);
@@ -175,8 +179,10 @@ export class Histogram extends React.PureComponent<histogramProps,histogramState
         let ref= this;
         setTimeout(
             function run(){
-                callback(i);
-                i++;
+                if(ref.state?.paused===false){
+                    callback(i);
+                    i++;
+                }
                 ref.timeOut=setTimeout(run,ref.state?.speed);
                 if(i>count){
                     clearTimeout(ref.timeOut);
@@ -269,6 +275,9 @@ export class Histogram extends React.PureComponent<histogramProps,histogramState
     setInputSize(inputSize:string){
         this.setState({inputSize});
     }
+    handlePausePlay(){
+        this.setState({paused:!this.state?.paused});
+    }
     render(){
         return (
             <div style={{width:"100%",textAlign:"center"}}>
@@ -330,6 +339,16 @@ export class Histogram extends React.PureComponent<histogramProps,histogramState
                 {
                     this.props.isCompare ? null : 
                     <Button onClick={()=>this.sort()} disabled={this.state?.sorting || this.state?.index1===-1}>{this.state?.sorting ? 'Sorting...' : 'Sort'}</Button>
+                }
+                {   
+                    this.props.isCompare || !this.state?.sorting ? null :
+                    <Button onClick={()=>this.handlePausePlay()}>
+                        {
+                            this.state?.paused ? 
+                                <PlayCircleFilled title="Play"/> : 
+                                <PauseCircleFilled title="Pause"/>
+                        }
+                    </Button>
                 }
                 {
                     this.props.isCompare ? null :
