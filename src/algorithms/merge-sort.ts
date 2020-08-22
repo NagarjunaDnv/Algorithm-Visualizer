@@ -38,23 +38,11 @@ export function mergeSort(arr:number[]):Animation[]{
             index++;
         }
         while(i<=mid){
-            animations.push({
-                indicesMergeSort:[-1,-1],
-                override:false,
-                swap:false,
-                indices:[i,j-1]
-            })
             temp[index]=arr[i];
             i++;
             index++;
         }
         while(j<=end){
-            animations.push({
-                indicesMergeSort:[-1,-1],
-                override:false,
-                swap:false,
-                indices:[i-1,j]
-            })
             temp[index]=arr[j];
             j++;
             index++;
